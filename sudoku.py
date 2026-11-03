@@ -23,8 +23,10 @@ def resolver(tablero):
         for columna in range(9):
             if tablero[fila][columna] != 0:
                 continue
+            ramas = []
             for valor in range(1, 10):
                 if puede_colocar(tablero, fila, columna, valor):
+                    ramas.append(valor)
                     tablero[fila][columna] = valor
                     if resolver(tablero):
                         return True
