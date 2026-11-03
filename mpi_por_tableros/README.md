@@ -1,5 +1,11 @@
 # Tarea 1: repartir tableros
 
-Implementa una versión MPI en esta carpeta. Al ejecutar todos los tableros, cada ID debe ser una tarea que pueda asignarse a un proceso. Reutiliza el resolvedor de `../sudoku.py` y reúne los estados en el proceso coordinador.
+Todos los ids se reparten entre la cantidad de nodos que haya. Si la división no es exacta, se reparten los IDs restantes entre los primeros
+procesos. El programa no toma parámetros.
 
-Registra el tiempo total de ejecución y confirma que se procesaron los 30 IDs. Añade aquí el comando para ejecutar tu implementación con el contenedor. Incluye `--allow-run-as-root --use-hwthread-cpus --oversubscribe` en `mpiexec`, como en la calibración.
+## Ejecución 
+
+```powershell
+docker run --rm -v "${PWD}:/app" augustosalazar/slim-mpi:2 mpiexec --allow-run-as-root --use-hwthread-cpus --oversubscribe -n 4 python /app/mpi_por_tableros/solver.py
+```
+

@@ -27,7 +27,6 @@ def leer_seeds(ruta):
 
 def main():
     if rank == 0:
-        inicio = time.perf_counter()
         parser = argparse.ArgumentParser(description="Resuelve Sudokus por backtracking (paralelización por tableros).")
         parser.add_argument("--archivo", type=Path, default=Path(__file__).with_name("seeds.txt"),
                             help="archivo de seeds (por defecto: seeds.txt)")
@@ -42,6 +41,7 @@ def main():
             m = len(seleccionados) // size
             remaining = len(seleccionados) % size
 
+            inicio = time.perf_counter() # Desde inicio de reparto
             tableros_por_nodo = [seleccionados[(i-1)*m:i*m] for i in range(1,size+1)]
             for index, board in enumerate(seleccionados[-remaining:]):
                 tableros_por_nodo[index].append(board)
@@ -59,13 +59,19 @@ def main():
         tablero = [fila[:] for fila in original]
         resuelto, segundos = resolver_con_tiempo(tablero)
         # tiempo_total += segundos
-        print(f"\n [{rank = }] ID: {nombre}")
+        print(f"\n[{rank = }] ID: {nombre}")
         print(f"[{rank = }] Resuelto" if resuelto else "Sin solución")
+        comm.send(nombre, dest=0)
         # etiqueta = "Tiempo" if args.id else "Tiempo parcial"
         # print(f"{etiqueta}: {segundos:.6f} segundos", flush=True)
     # if not args.id:
         # print(f"\nTiempo total: {tiempo_total:.6f} segundos")
     if rank == 0:
+        confirmed = []
+        for i in range(len(seleccionados)):
+            confirmed.append(comm.recv(source=MPI.ANY_SOURCE))
+        assert(len(confirmed) == len(seleccionados))
+        print("Todos los tableros resueltos")
         print(f"Tiempo total: {time.perf_counter() - inicio:.6f} segundos")
 
 if __name__ == "__main__":

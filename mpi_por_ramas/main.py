@@ -1,3 +1,5 @@
+"""Resolución de Sudoku mediante MPI repartiendo ramas de cada tablero."""
+
 import argparse
 import sys
 from collections import deque
